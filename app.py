@@ -9,7 +9,7 @@ def create_app(test_config=None):
   CORS(app)
   @app.route('/', methods=['GET'])
   def hello():
-      print('Hello world, almost there!')
+      return 'Hello world, almost there!'
 
 
   return app
