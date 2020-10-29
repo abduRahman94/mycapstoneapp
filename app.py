@@ -2,7 +2,6 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db
 from flask_migrate import Migrate
 from datetime import datetime
 
