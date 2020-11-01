@@ -24,7 +24,7 @@ client_id='L5ThqIhHIyXm1gVULmBxrvGux1a9Wlgt'
 audience= 'castingapi'
 api_base_url='https://castingapp.us.auth0.com'
 response_type='token'
-redirect_uri='http://localhost:8085/callback'
+redirect_uri='https://mycapstoneapp.herokuapp.com/callback'
 state = 'STATE'
 
 class Movie(db.Model):
