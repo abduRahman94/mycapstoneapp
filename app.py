@@ -1,10 +1,16 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, redirect, render_template, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+#from models import setupDb
 from flask_migrate import Migrate
 from datetime import datetime
-
+#from os import environ as env
+from werkzeug.exceptions import HTTPException
+#from dotenv import load_dotenv, find_dotenv
+#from authlib.integrations.flask_client import OAuth
+from six.moves.urllib.parse import urlencode
+from auth import requires_auth
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -12,6 +18,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+
+client_id='L5ThqIhHIyXm1gVULmBxrvGux1a9Wlgt'
+audience= 'castingapi'
+api_base_url='https://castingapp.us.auth0.com'
+response_type='token'
+redirect_uri='http://localhost:8085/callback'
+state = 'STATE'
 
 class Movie(db.Model):
   __tablename__ = 'Movie'
@@ -29,9 +43,18 @@ class Actor(db.Model):
   gender = db.Column(db.String)
   movies = db.relationship('Movie', backref='actor')
   
-  
+
+@app.route('/')
+def home():
+  return render_template('home.html')
+
+@app.route('/login')
+def login():
+    return redirect(api_base_url + '/authorize?' + 'audience=' + audience + '&' + 'response_type=' + response_type + '&' + 'client_id=' + client_id + '&' + 'redirect_uri=' + redirect_uri + '&' + 'state=' + state)  
+
 @app.route('/api/actors', methods=['GET'])
-def get_actors():
+@requires_auth('get:actors')
+def get_actors(payload):
   actor_collection = db.session.query(Actor).all()
   actors = []
   
@@ -44,6 +67,7 @@ def get_actors():
     })
 
 @app.route('/api/movies', methods=['GET'])
+@requires_auth('get:movies')
 def get_movies():
   movie_collection = db.session.query(Movie).all()
   movies = []
@@ -57,6 +81,7 @@ def get_movies():
     })
 
 @app.route('/api/actors', methods=['POST'])
+@requires_auth('post:actor')
 def add_actor():
   body = request.get_json()
   name = body.get('name')
@@ -77,6 +102,7 @@ def add_actor():
     db.session.rollback()
 
 @app.route('/api/movies', methods=['POST'])
+@requires_auth('post:movie')
 def add_movie():
   body = request.get_json()
   title = body.get('title')
@@ -96,7 +122,9 @@ def add_movie():
   except Exception:
     db.session.rollback()
 
+
 @app.route('/api/actors/<int:id>', methods=['DELETE'])
+@requires_auth('delete:actor')
 def del_actor(id):
   actor = db.session.query(Actor).filter_by(id=id).first()
   try:
@@ -109,7 +137,9 @@ def del_actor(id):
   except Exception:
     db.session.rollback()
 
+
 @app.route('/api/movies/<int:id>', methods=['DELETE'])
+@requires_auth('delete:movie')
 def del_movie(id):
   movie = db.session.query(Movie).filter_by(id=id).first()
   try:
@@ -122,7 +152,9 @@ def del_movie(id):
   except Exception:
     db.session.rollback()
 
+
 @app.route('/api/actors/<int:id>', methods=['PATCH']) 
+@requires_auth('patch:actors')
 def modif_actor(id):
   body = request.get_json()
   
@@ -155,7 +187,9 @@ def modif_actor(id):
   except Exception:
     db.session.rollback()
 
-@app.route('/api/movies/<int:id>', methods=['PATCH']) 
+
+@app.route('/api/movies/<int:id>', methods=['PATCH'])
+@requires_auth('patch:movies') 
 def modif_movie(id):
   body = request.get_json()
   
@@ -189,9 +223,34 @@ def not_found(error):
   return jsonify({
     'success': False,
     'error': 404,
-    'message': 'resource not found'
+    'message': 'Resource not found'
+  }), 400
+
+@app.errorhandler(422)
+def unprocessable(error):
+  return jsonify({
+    'success': False,
+    'error': 422,
+    'message': 'Unprocessable entity'
+  }), 422
+
+@app.errorhandler(500)
+def unprocessable(error):
+  return jsonify({
+    'success': False,
+    'error': 500,
+    'message': 'Internal server error'
+  }), 500
+
+@app.errorhandler(400)
+def unprocessable(error):
+  return jsonify({
+    'success': False,
+    'error': 400,
+    'message': 'Bad request'
   }), 400
 
 #app = create_app()
 if __name__ == '__main__':
+  app.secret_key = 'YOUR_CLIENT_SECRET'
   app.run(host='127.0.0.1', port=8085, debug=True)
