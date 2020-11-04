@@ -34,7 +34,7 @@ def create_app(test_config=None):
 
   @app.route('/api/actors', methods=['GET', 'POST'])
   @requires_auth('get:actors')
-  def get_actors(payload):
+  def get_actors(jwt):
     actor_collection = db.session.query(Actor).all()
     actors = []
     
@@ -48,7 +48,7 @@ def create_app(test_config=None):
 
   @app.route('/api/movies', methods=['GET'])
   @requires_auth('get:movies')
-  def get_movies():
+  def get_movies(jwt):
     movie_collection = db.session.query(Movie).all()
     movies = []
 
@@ -62,7 +62,7 @@ def create_app(test_config=None):
 
   @app.route('/api/actors', methods=['POST'])
   @requires_auth('post:actor')
-  def add_actor():
+  def add_actor(jwt):
     body = request.get_json()
     name = body.get('name')
     age = int(body.get('age'))
@@ -83,7 +83,7 @@ def create_app(test_config=None):
 
   @app.route('/api/movies', methods=['POST'])
   @requires_auth('post:movie')
-  def add_movie():
+  def add_movie(jwt):
     body = request.get_json()
     title = body.get('title')
     date = body.get('release_date')
