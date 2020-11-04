@@ -17,9 +17,9 @@ def create_app(test_config=None):
   setupDb(app, database_name)
   CORS(app)
 
-  client_id='L5ThqIhHIyXm1gVULmBxrvGux1a9Wlgt'
+  client_id = os.environ.get('AUTH0_CLIENT_ID')
   audience= 'castingapi'
-  api_base_url='https://castingapp.us.auth0.com'
+  api_base_url= os.environ.get('AUTH0_DOMAIN_NAME')
   response_type='token'
   redirect_uri='https://mycapstoneapp.herokuapp.com/callback'
   state = 'STATE'
@@ -236,5 +236,5 @@ def create_app(test_config=None):
 
 app = create_app()
 if __name__ == '__main__':
-  app.secret_key = 'YOUR_CLIENT_SECRET'
+  app.secret_key = os.environ.get('JWT_SECRET')
   app.run(host='127.0.0.1', port=8085, debug=True)
