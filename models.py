@@ -1,12 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 database_name = "test.db"
-database_path = "sqlite:///{}".format(database_name)
-def setupDb(app, database_path=database_path):
-  app.config['SQLALCHEMY_DATABASE_URI'] = database_path
+
+def setupDb(app, database_name=database_name):
+  app.config['SQLALCHEMY_DATABASE_URI'] = database_path = "sqlite:///{}".format(database_name)
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   db.app = app
+  migrate = Migrate(app, db)
   db.init_app(app)
 
 
