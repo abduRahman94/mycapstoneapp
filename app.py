@@ -32,7 +32,7 @@ def create_app(test_config=None):
   def login():
       return redirect(api_base_url + '/authorize?' + 'audience=' + audience + '&' + 'response_type=' + response_type + '&' + 'client_id=' + client_id + '&' + 'redirect_uri=' + redirect_uri + '&' + 'state=' + state)  
 
-  @app.route('/api/actors', methods=['GET', 'POST'])
+  @app.route('/api/actors', methods=['GET'])
   @requires_auth('get:actors')
   def get_actors(jwt):
     actor_collection = db.session.query(Actor).all()
@@ -53,7 +53,10 @@ def create_app(test_config=None):
     movies = []
 
     for movie in movie_collection:
-      movies.append({'title': movie.title, 'date': movie.release_date, 'actor': movie.actor.name})
+      if movie.actor is None:
+        movies.append({'title': movie.title, 'date': movie.release_date, 'actor': ''})
+      else:
+        movies.append({'title': movie.title, 'date': movie.release_date,'actor': movie.actor.name}) 
     
     return jsonify ({
       'success': True,
@@ -74,7 +77,7 @@ def create_app(test_config=None):
       db.session.commit()
       
       return jsonify({
-        'sucess': True,
+        'success': True,
         'id': actor.id
       })
 
@@ -88,14 +91,14 @@ def create_app(test_config=None):
     title = body.get('title')
     date = body.get('release_date')
     dateTimeObj = datetime.strptime(date, "%m-%d-%y")
-
-    movie = Movie(title=title, release_date=dateTimeObj)
+    actor_id = int(body.get('actor_id'))
+    movie = Movie(title=title, release_date=dateTimeObj, actor_id=actor_id)
     try:
       db.session.add(movie)
       db.session.commit()
       
       return jsonify({
-        'sucess': True,
+        'success': True,
         'id': movie.id
       })
 
@@ -105,7 +108,7 @@ def create_app(test_config=None):
 
   @app.route('/api/actors/<int:id>', methods=['DELETE'])
   @requires_auth('delete:actor')
-  def del_actor(id):
+  def del_actor(jwt, id):
     actor = db.session.query(Actor).filter_by(id=id).first()
     try:
       db.session.delete(actor)
@@ -120,7 +123,7 @@ def create_app(test_config=None):
 
   @app.route('/api/movies/<int:id>', methods=['DELETE'])
   @requires_auth('delete:movie')
-  def del_movie(id):
+  def del_movie(jwt, id):
     movie = db.session.query(Movie).filter_by(id=id).first()
     try:
       db.session.delete(movie)
@@ -135,7 +138,7 @@ def create_app(test_config=None):
 
   @app.route('/api/actors/<int:id>', methods=['PATCH']) 
   @requires_auth('patch:actors')
-  def modif_actor(id):
+  def modif_actor(jwt, id):
     body = request.get_json()
     
     name= ""
@@ -159,6 +162,7 @@ def create_app(test_config=None):
       actor.age = age
       actor.gender = gender
       db.session.commit()
+      
       return jsonify({
         'success': True,
         'id': actor.id
@@ -170,11 +174,11 @@ def create_app(test_config=None):
 
   @app.route('/api/movies/<int:id>', methods=['PATCH'])
   @requires_auth('patch:movies') 
-  def modif_movie(id):
+  def modif_movie(jwt, id):
     body = request.get_json()
     
     title= ""
-    release_date= ""
+    release_date= None
 
     if 'title' in body:
       title = body.get('title')
@@ -183,13 +187,14 @@ def create_app(test_config=None):
       date = body.get('release_date')
       release_date = datetime.strptime(date, '%m-%d-%y')
   
-
+    
     try:
       movie = db.session.query(Movie).filter_by(id=id).first()
       
       movie.title = title
       movie.release_date = release_date
       db.session.commit()
+      
       return jsonify({
         'success': True,
         'id': movie.id
