@@ -228,3 +228,41 @@ browser with a value starting by ey....
 Copy the value untill you reach a "&" character which don't have to be copied.
 This string will be the token string we mentionned earlier in the API
 endpoints description.
+
+Roles and permissions
+---------------------
+
+The API permissions are:
+    - `get:actors`
+    - `post:actor`
+    - `patch:actors`
+    - `delete:actor`
+    
+    - `get:movies`
+    - `post:movie`
+    - `patch:movies`
+    - `delete:movie`
+
+The roles are:
+    - Casting Assistant can:
+        - `get:actors`
+        - `get:movies`
+
+    - Casting Director
+        - `get:actors`
+        - `get:movies`
+        - `post:actor`
+        - `delete:actor`
+        - `patch:movies`
+        - `patch:actors`
+    
+    - Executive Producer
+        - `get:actors`
+        - `get:movies`
+        - `post:actor`
+        - `post:movie`
+        - `delete:actor`
+        - `delete:movie`
+        - `patch:movies`
+        - `patch:actors`
+        
