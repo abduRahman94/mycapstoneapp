@@ -1,0 +1,230 @@
+#=============CASTING APP=============#
+
+Motiation
+---------
+This project is an academic overall capstone that puts in practice various
+domains such as SQL data modeling, RESTful API development and
+Authorization and authentication.
+
+Dependencies
+------------
+The project folder contains a requirements.txt file which contains all
+the dependencies needed.
+To install the dependencies, you need the python package manager (pip).
+To check if you have it, type:
+$ pip --version
+If you don't have it already, install it using:
+$ apt-get install pip
+Once done with pip, install the dependencies using:
+$ pip install -r requirements.txt
+
+Environment variables:
+----------------------
+The project architecture requires environment variables to be set up for
+further use in the app.
+These variables can be found in the (setup.sh) file.
+To be able to access those variables in the development environment use:
+$ source setup.sh
+
+Application deployment
+----------------------
+To launch the app you should be placed in the root folder where the app.py
+file is present and run the following command:
+$ python app.py
+
+You should then see the logging of the deployment process with the url
+to access the app such as:
+Running on http://127.0.0.1:8085/
+You can copy the url and paste it in the browser and see the app in action.
+
+API Endpoints and RBAC
+----------------------
+Endpoints
+---------
+
+# Actors
+
+GET /api/actors
+POST /api/actors
+PATCH /api/actors/<id>
+DELETE /api/actors/<id>
+
+GET /api/actors
+- This allows to request from the server a collection of actors formatted
+with a key-value pair of information.
+- No arguments is required.
+- The result sample is:
+
+{
+    "actors": [
+        {
+            "age": "",
+            "gender": "",
+            "name": "test"
+        },
+        {
+            "age": 34,
+            "gender": "Male",
+            "name": "noah"
+        },
+        {
+            "age": 30,
+            "gender": "Female",
+            "name": "noor"
+        }
+    ],
+    "success": true
+}
+
+POST /api/actors
+- This allows to add/create a new actor to the collection of actors
+- Arguments are needed to create a new actor:
+    - The json body for the information details of the actor such:
+      {'name': 'value', 'gender':'value', 'age': 'value'}
+    - The header that contains the Authorization token:
+      {'Content-type': 'application/json', 'Authorization': 'Bearer token_string'}
+      We will talk about the token_string later in this documentation. 
+- The result sample is:
+
+{
+    'success': True,
+    'id': 1
+}
+
+PATCH /api/actors/<id>
+- This allows to modify a specific actor, the one whose id is specified
+at the end of the request
+- The arguments are:
+    - The id of the actor to modify: /api/actors/2
+    - The json body containing the information to modify such as:
+      {'name': 'value'}
+    - The header that contains the Authorization token:
+      {'Content-type': 'application/json', 'Authorization': 'Bearer token_string'}
+-  The result sample is:
+
+{
+    'success': True,
+    'id': 2
+}
+
+DELETE /api/actors/<id>
+- This allows to delete a specific actor from the actors collection
+- The arguments are:
+    - The id of the actor to modify: /api/actors/3
+    - The header that contains the Authorization token:
+      {'Content-type': 'application/json', 'Authorization': 'Bearer token_string'}
+- The result sample is:
+
+{
+    'success': True,
+    'id': 3
+}
+
+# Movies
+
+GET /api/movies
+POST /api/movies
+PATCH /api/movies/<id>
+DELETE /api/movies/<id>
+
+GET /api/movies
+- This allows to request from the server a collection of movies formatted
+with a key-value pair of information.
+- No arguments is required.
+- The result sample is:
+
+{
+    "actors": [
+        {
+            "actor": "noor",
+            "date": "Thu, 29 Oct 2020 00:00:00 GMT",
+            "title": "Clash"
+        },
+        {
+            "actor": "abdou",
+            "date": "Mon, 13 May 2019 00:00:00 GMT",
+            "title": "Stars"
+        },
+        {
+            "actor": "cheikh",
+            "date": "Sun, 13 Apr 2014 00:00:00 GMT",
+            "title": "Shadow knights"
+        },
+        {
+            "actor": "test",
+            "date": "Sat, 14 Nov 2015 00:00:00 GMT",
+            "title": "Moolight"
+        }
+    ],
+    "success": true
+}
+
+POST /api/movies
+- This allows to add/create a new movie to the collection of actors
+- Arguments are needed to create a new movie:
+    - The json body for the information details of the actor such:
+      {'title': 'value', 'release_date':'value'}
+    - The header that contains the Authorization token:
+      {'Content-type': 'application/json', 'Authorization': 'Bearer token_string'} 
+- The result sample is:
+
+{
+    'success': True,
+    'id': 1
+}
+
+PATCH /api/movies/<id>
+- This allows to modify a specific movie, the one whose id is specified
+at the end of the request
+- The arguments are:
+    - The id of the movie to modify: /api/movies/2
+    - The json body containing the information to modify such as:
+      {'name': 'value'}
+    - The header that contains the Authorization token:
+      {'Content-type': 'application/json', 'Authorization': 'Bearer token_string'}
+-  The result sample is:
+
+{
+    'success': True,
+    'id': 2
+}
+
+DELETE /api/movies/<id>
+- This allows to delete a specific movie from the movies collection
+- The arguments are:
+    - The id of the movie to modify: /api/movies/6
+    - The header that contains the Authorization token:
+      {'Content-type': 'application/json', 'Authorization': 'Bearer token_string'}
+- The result sample is:
+
+{
+    'success': True,
+    'id': 6
+}
+
+Application setup and authentication
+------------------------------------
+
+The url of the application is the following:
+- https://mycapstoneapp.herokuapp.com/
+
+If the requests with curl or postman are not passing, please try
+using http instead of https.
+
+The user profiles to authenticate are the following:
+
+- Casting Assistant 
+    - username: castassist@castingapp.com
+    - password: Passer123
+- Casting Director:
+    - username: castdirect@castingapp.com
+    - password: Passer123
+- Executive Producer
+    - username: execprod@castingapp.com
+    - password: Passer123
+
+Once you are authentified, an "access_token" parameter will appear on the 
+browser with a value starting by ey....
+Copy the value untill you reach a "&" character which don't have to be copied.
+This string will be the token string we mentionned earlier in the API
+endpoints description.
