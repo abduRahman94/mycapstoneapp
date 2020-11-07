@@ -1,13 +1,18 @@
+import os
 import json
 from flask import request, _request_ctx_stack
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-
-AUTH0_DOMAIN = 'castingapp.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'castingapi'
+API_BASE_URL= os.environ.get('AUTH0_DOMAIN_NAME')
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+ALGORITHMS = os.environ.get('ALGORITHMS')
+API_AUDIENCE = os.environ.get('API_AUDIENCE')
+CLIENT_ID = os.environ.get('AUTH0_CLIENT_ID')
+REDIRECT_URI = os.environ.get('REDIRECT_URI')
+RESPONSE_TYPE = os.environ.get('RESPONSE_TYPE')
+STATE = os.environ.get('STATE')
 
 ## AuthError Exception
 '''

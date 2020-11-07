@@ -1,3 +1,9 @@
 export AUTH0_DOMAIN_NAME='https://castingapp.us.auth0.com'
 export JWT_SECRET='JWT_SECRET'
 export AUTH0_CLIENT_ID='L5ThqIhHIyXm1gVULmBxrvGux1a9Wlgt'
+export API_AUDIENCE='castingapi'
+export ALGORITHMS=['RS256']
+export AUTH_DOMAIN='castingapp.us.auth0.com'
+export REDIRECT_URI='https://mycapstoneapp.herokuapp.com/callback'
+export RESPONSE_TYPE='token'
+export STATE='STATE'
